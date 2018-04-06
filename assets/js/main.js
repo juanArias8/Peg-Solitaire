@@ -91,14 +91,7 @@ $(document).ready(function () {
                 let coordinates = getCoordinatesById(id);
                 possibles = searchMovement(coordinates[0], coordinates[1]);
                 if (possibles.length > 0) {
-                    possibles.forEach(element => {
-                        let aux = getCoordinatesById(element);
-                        let i = aux[0];
-                        let j = aux[1];
-                        let id = getIdByCoordinates(i, j);
-                        let str = "#" + id;
-                        $(str).css("background-color", "blue");
-                    });
+                    colorPossibles("blue");
                     move.push(parseInt(id));
                 } else {
                     Materialize.toast('La opción seleccionada no tiene posibles movimientos', 5000, 'rounded');
@@ -106,10 +99,24 @@ $(document).ready(function () {
                 }
             } else if (move.length == 1) {
                 move.push(parseInt(id));
-                console.log(move);
-                console.log(possibles);
-                console.log(possibles.indexOf((move[1])));
-               
+
+                if (possibles.indexOf(move[1]) != -1) {
+                    Materialize.toast('Bien hecho!', 5000, 'rounded');
+
+                    changeEmptyByFull(move[0], move[1]);
+                    deleteMiddleFullEmpty(move[0], move[1]);
+                    paintGame();
+                    
+                    possibles = [];
+                    move = [];
+                } else {
+                    Materialize.toast('Movimiento no valido', 5000, 'rounded');
+
+                    colorPossibles("white");
+                    unsealSelected();
+                    possibles = [];
+                    move = [];
+                }
             } else {
                 Materialize.toast('Ha ocurrido un error', 5000, 'rounded');
             }
@@ -205,6 +212,23 @@ $(document).ready(function () {
         });
     }
 
+    function colorPossibles(color) {
+        possibles.forEach(element => {
+            let aux = getCoordinatesById(element);
+            let i = aux[0];
+            let j = aux[1];
+            let id = getIdByCoordinates(i, j);
+            let str = "#" + id;
+            $(str).css("background-color", color);
+        });
+    }
+
+    function unsealSelected() {
+        let id = move[0];
+        let str = "#" + id;
+        $(str).css("background-color", "green");
+    }
+
     function getIdByCoordinates(i, j) {
         let id = (rows * i) + j;
         return id;
@@ -258,8 +282,8 @@ $(document).ready(function () {
     function changeEmptyByFull(id1, id2) {
         let coordinatesId1 = getCoordinatesById(id1);
         let coordinatesId2 = getCoordinatesById(id2);
-        matrix[coordinatesId1[0]][coordinatesId1[1]] = 1;
-        matrix[coordinatesId2[0]][coordinatesId2[1]] = 2;
+        matrix[coordinatesId1[0]][coordinatesId1[1]] = 2;
+        matrix[coordinatesId2[0]][coordinatesId2[1]] = 1;
     }
 
     function deleteMiddleFullEmpty(id1, id2) {
