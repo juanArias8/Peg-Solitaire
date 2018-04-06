@@ -37,6 +37,8 @@ $(document).ready(function () {
     var onGame = false;
     var onCustomise = false;
 
+    var move = [];
+    let possibles = [];
 
     /*****************************************************************
     ************************ VISUAL LOGIC ****************************
@@ -82,23 +84,36 @@ $(document).ready(function () {
             let coordinates = getCoordinatesById(id);
             matrixCustomisable[coordinates[0]][coordinates[1]] = 1;
         } else if (onGame) {
-            $(this).css("background-color", "aqua");
-
             let id = $(this).attr("id");
-            let coordinates = getCoordinatesById(id);
-            let possibles = searchMovement(coordinates[0], coordinates[1]);
-            if (possibles.length > 0) {
-                possibles.forEach(element => {
-                    let i = element[0];
-                    let j = element[1];
-                    let id = getIdByCoordinates(i, j);
-                    let str = "#" + id;
-                    $(str).css("background-color", "blue");
-                });
+            if (move.length == 0) {
+                $(this).css("background-color", "aqua");
+
+                let coordinates = getCoordinatesById(id);
+                possibles = searchMovement(coordinates[0], coordinates[1]);
+                if (possibles.length > 0) {
+                    possibles.forEach(element => {
+                        let aux = getCoordinatesById(element);
+                        let i = aux[0];
+                        let j = aux[1];
+                        let id = getIdByCoordinates(i, j);
+                        let str = "#" + id;
+                        $(str).css("background-color", "blue");
+                    });
+                    move.push(parseInt(id));
+                } else {
+                    Materialize.toast('La opción seleccionada no tiene posibles movimientos', 5000, 'rounded');
+                    $(this).css("background-color", "green");
+                }
+            } else if (move.length == 1) {
+                move.push(parseInt(id));
+                console.log(move);
+                console.log(possibles);
+                console.log(possibles.indexOf((move[1])));
+               
             } else {
-                Materialize.toast('La opción seleccionada no tiene posibles movimientos', 5000, 'rounded');
-                $(this).css("background-color", "green");
+                Materialize.toast('Ha ocurrido un error', 5000, 'rounded');
             }
+
         } else {
             Materialize.toast('Opción no permitida', 5000, 'rounded');
         }
@@ -204,36 +219,40 @@ $(document).ready(function () {
     }
 
     function searchMovement(i, j) {
-        let possibles = [];
+        let possiblesLocal = [];
         try {
             if (matrix[i - 2][j] == 2) {
-                possibles.push([i - 2, j]);
+                let id = getIdByCoordinates(i - 2, j);
+                possiblesLocal.push(id);
             }
         } catch (err) {
             // pass
         }
         try {
             if (matrix[i][j - 2] == 2) {
-                possibles.push([i, j - 2]);
+                let id = getIdByCoordinates(i, j - 2);
+                possiblesLocal.push(id);
             }
         } catch (err) {
             // pass
         }
         try {
             if (matrix[i][j + 2] == 2) {
-                possibles.push([i, j + 2]);
+                let id = getIdByCoordinates(i, j + 2);
+                possiblesLocal.push(id);
             }
         } catch (err) {
             // pass
         }
         try {
             if (matrix[i + 2][j] == 2) {
-                possibles.push([i + 2, j]);
+                let id = getIdByCoordinates(i + 2, j);
+                possiblesLocal.push(id);
             }
         } catch (err) {
             // pass
         }
-        return possibles;
+        return possiblesLocal;
     }
 
     function changeEmptyByFull(id1, id2) {
