@@ -1,0 +1,43 @@
+.header{
+    background-color: #7e57c2;
+    height: 100px;;
+    padding: 1%;
+}
+.header-title{
+    margin-top: 0;
+}
+.options{
+    margin-bottom: 2%;
+    margin-top: -20px;
+}
+.opt-btn{
+    width: 200px;
+    color: black !important;
+}
+.row-board{
+    margin-top: -10px;
+}
+.description{
+    height: 70vh;
+}
+.board{
+    padding: 7%;
+    border-radius: 50%;
+    height: 500px;
+    width: 500px;
+    padding-top: 50px;
+}
+.row-board > .col{
+    width: 60px !important;
+}
+.btn-peg{
+    width: 45px;
+    height: 45px;
+    background-color: white;
+    border-radius: 50%;
+    border: solid 2px black;
+}
+.btn-peg:hover{
+    background-color: aqua;
+}
+
