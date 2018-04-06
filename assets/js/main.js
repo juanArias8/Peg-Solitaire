@@ -45,8 +45,8 @@ $(document).ready(function () {
     ******************************************************************/
 
     // Materialize events
-    $('.modal').modal();
-    $('#modal1').modal('open');
+    //$('.modal').modal();
+    //$('#modal1').modal('open');
 
     // Ocultamos el cuerpo del juego
     $("#game-body").hide(0);
@@ -105,21 +105,25 @@ $(document).ready(function () {
                 move.push(parseInt(id));
 
                 if (possibles.indexOf(move[1]) != -1) {
-                    Materialize.toast('Bien hecho!', 5000, 'rounded');
+                    if (checkMiddleFullEmpty(move[0], move[1])) {
+                        Materialize.toast('Bien hecho!', 5000, 'rounded');
 
-                    changeEmptyByFull(move[0], move[1]);
-                    deleteMiddleFullEmpty(move[0], move[1]);
-                    paintGame();
+                        changeEmptyByFull(move[0], move[1]);
+                        deleteMiddleFullEmpty(move[0], move[1]);
+                        paintGame();
+                        resetMove();
+                    } else {
+                        Materialize.toast('Movimiento no valido, no hay nada que eliminar', 5000, 'rounded');
+                        colorPossibles("white");
+                        unsealSelected();
+                        resetMove();
+                    }
 
-                    possibles = [];
-                    move = [];
                 } else {
                     Materialize.toast('Movimiento no valido', 5000, 'rounded');
-
                     colorPossibles("white");
                     unsealSelected();
-                    possibles = [];
-                    move = [];
+                    resetMove();
                 }
             } else {
                 Materialize.toast('Ha ocurrido un error', 5000, 'rounded');
@@ -200,6 +204,11 @@ $(document).ready(function () {
         $(str).css("background-color", "green");
     }
 
+    function resetMove() {
+        possibles = [];
+        move = [];
+    }
+
     function getIdByCoordinates(i, j) {
         let id = (rows * i) + j;
         return id;
@@ -264,6 +273,12 @@ $(document).ready(function () {
         let j1 = coordinatesId1[1];
         let i2 = coordinatesId2[0];
         let j2 = coordinatesId2[1];
+        let middleCoordinates = findMiddleFullEmpty(i1, j1, i2, j2);
+        matrix[middleCoordinates[0]][middleCoordinates[1]] = 2;
+    }
+
+    function findMiddleFullEmpty(i1, j1, i2, j2) {
+        let middle = [];
         let ifinal = 0;
         let jfinal = 0;
         if ((i1 - i2) == 0) {
@@ -276,7 +291,26 @@ $(document).ready(function () {
             ifinal = aux + 1;
             jfinal = j1;
         }
-        matrix[ifinal][jfinal] = 2;
+        middle.push(ifinal);
+        middle.push(jfinal);
+        return middle;
+    }
+
+    function checkMiddleFullEmpty(id1, id2) {
+        let bool = false;
+        let coordinatesId1 = getCoordinatesById(id1);
+        let coordinatesId2 = getCoordinatesById(id2);
+        let i1 = coordinatesId1[0];
+        let j1 = coordinatesId1[1];
+        let i2 = coordinatesId2[0];
+        let j2 = coordinatesId2[1];
+        let middleCoordinates = findMiddleFullEmpty(i1, j1, i2, j2);
+        let im = middleCoordinates[0];
+        let jm = middleCoordinates[1];
+        if (matrix[im][jm] == 1) {
+            bool = true;
+        }
+        return bool;
     }
 
     // Función para volver los datos a las condiciones iniciales
@@ -303,9 +337,5 @@ $(document).ready(function () {
             [0, 0, 2, 2, 2, 0, 0]
 
         ];
-    }
-
-    function startGame() {
-        console.log("game started");
     }
 });
