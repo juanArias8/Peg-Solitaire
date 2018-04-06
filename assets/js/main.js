@@ -32,7 +32,7 @@ $(document).ready(function () {
 
     var rows = matrix.length;
     var cols = matrix[0].length;
-    var prohibited = [0, 1, 5, 6, 7, 8, 12, 13, 35, 36, 40, 41, 42, 43, 47, 48];
+    //var prohibited = [0, 1, 5, 6, 7, 8, 12, 13, 35, 36, 40, 41, 42, 43, 47, 48];
 
     var onGame = false;
     var onCustomise = false;
@@ -86,16 +86,20 @@ $(document).ready(function () {
         } else if (onGame) {
             let id = $(this).attr("id");
             if (move.length == 0) {
-                $(this).css("background-color", "aqua");
-
                 let coordinates = getCoordinatesById(id);
-                possibles = searchMovement(coordinates[0], coordinates[1]);
-                if (possibles.length > 0) {
-                    colorPossibles("blue");
-                    move.push(parseInt(id));
+                if (matrix[coordinates[0]][coordinates[1]] == 1) {
+                    $(this).css("background-color", "aqua");
+
+                    possibles = searchMovement(coordinates[0], coordinates[1]);
+                    if (possibles.length > 0) {
+                        colorPossibles("blue");
+                        move.push(parseInt(id));
+                    } else {
+                        Materialize.toast('La opción seleccionada no tiene posibles movimientos', 5000, 'rounded');
+                        $(this).css("background-color", "green");
+                    }
                 } else {
-                    Materialize.toast('La opción seleccionada no tiene posibles movimientos', 5000, 'rounded');
-                    $(this).css("background-color", "green");
+                    Materialize.toast('Debes seleccionar una opción válida', 5000, 'rounded');
                 }
             } else if (move.length == 1) {
                 move.push(parseInt(id));
@@ -106,7 +110,7 @@ $(document).ready(function () {
                     changeEmptyByFull(move[0], move[1]);
                     deleteMiddleFullEmpty(move[0], move[1]);
                     paintGame();
-                    
+
                     possibles = [];
                     move = [];
                 } else {
@@ -152,6 +156,10 @@ $(document).ready(function () {
         resetMatrixCustomisable();
         unsealGame();
     });
+
+    /*****************************************************************
+    ************************* GAME LOGIC *****************************
+    ******************************************************************/
 
     function paintGame() {
         for (let i = 0; i < rows; i++) {
