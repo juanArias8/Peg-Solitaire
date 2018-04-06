@@ -45,8 +45,8 @@ $(document).ready(function () {
     ******************************************************************/
 
     // Materialize events
-    //$('.modal').modal();
-    //$('#modal1').modal('open');
+    $('.modal').modal();
+    $('#modal1').modal('open');
 
     // Ocultamos el cuerpo del juego
     $("#game-body").hide(0);
@@ -152,43 +152,6 @@ $(document).ready(function () {
         resetMatrixCustomisable();
         unsealGame();
     });
-
-    /* Condiciones iniciales de las fichas
-    data = [
-        { "id": 3, "selected": false, "removed": false, "position": [0, 2] },
-        { "id": 4, "selected": false, "removed": false, "position": [0, 3] },
-        { "id": 5, "selected": false, "removed": false, "position": [0, 4] },
-        { "id": 10, "selected": false, "removed": false, "position": [1, 2] },
-        { "id": 11, "selected": false, "removed": false, "position": [1, 3] },
-        { "id": 12, "selected": false, "removed": false, "position": [1, 4] },
-        { "id": 15, "selected": false, "removed": false, "position": [2, 0] },
-        { "id": 16, "selected": false, "removed": false, "position": [2, 1] },
-        { "id": 17, "selected": false, "removed": false, "position": [2, 2] },
-        { "id": 18, "selected": false, "removed": false, "position": [2, 3] },
-        { "id": 19, "selected": false, "removed": false, "position": [2, 4] },
-        { "id": 20, "selected": false, "removed": false, "position": [2, 5] },
-        { "id": 21, "selected": false, "removed": false, "position": [2, 6] },
-        { "id": 22, "selected": false, "removed": false, "position": [3, 0] },
-        { "id": 23, "selected": false, "removed": false, "position": [3, 1] },
-        { "id": 24, "selected": false, "removed": false, "position": [3, 2] },
-        { "id": 25, "selected": false, "removed": true, "position": [3, 3] },
-        { "id": 26, "selected": false, "removed": false, "position": [3, 4] },
-        { "id": 27, "selected": false, "removed": false, "position": [3, 5] },
-        { "id": 28, "selected": false, "removed": false, "position": [3, 6] },
-        { "id": 28, "selected": false, "removed": false, "position": [4, 0] },
-        { "id": 30, "selected": false, "removed": false, "position": [4, 1] },
-        { "id": 31, "selected": false, "removed": false, "position": [4, 2] },
-        { "id": 32, "selected": false, "removed": false, "position": [4, 3] },
-        { "id": 33, "selected": false, "removed": false, "position": [4, 4] },
-        { "id": 34, "selected": false, "removed": false, "position": [4, 5] },
-        { "id": 35, "selected": false, "removed": false, "position": [4, 6] },
-        { "id": 38, "selected": false, "removed": false, "position": [5, 2] },
-        { "id": 39, "selected": false, "removed": false, "position": [5, 3] },
-        { "id": 40, "selected": false, "removed": false, "position": [5, 4] },
-        { "id": 43, "selected": false, "removed": false, "position": [6, 2] },
-        { "id": 44, "selected": false, "removed": false, "position": [6, 3] },
-        { "id": 45, "selected": false, "removed": false, "position": [6, 4] },
-    ];*/
 
     function paintGame() {
         for (let i = 0; i < rows; i++) {
