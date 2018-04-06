@@ -76,17 +76,29 @@ $(document).ready(function () {
 
     $(".btn-peg").click(function () {
         if (onCustomise) {
+            $(this).css("background-color", "green");
+
             let id = $(this).attr("id");
-            let str = "#" + id;
             let coordinates = getCoordinatesById(id);
             matrixCustomisable[coordinates[0]][coordinates[1]] = 1;
-            $(str).css("background-color", "green");
-        } else if(onGame){
+        } else if (onGame) {
+            $(this).css("background-color", "aqua");
+
             let id = $(this).attr("id");
-            let str = "#" + id;
             let coordinates = getCoordinatesById(id);
-            matrixCustomisable[coordinates[0]][coordinates[1]] = 2;
-            $(str).css("background-color", "red");
+            let possibles = searchMovement(coordinates[0], coordinates[1]);
+            if (possibles.length > 0) {
+                possibles.forEach(element => {
+                    let i = element[0];
+                    let j = element[1];
+                    let id = getIdByCoordinates(i, j);
+                    let str = "#" + id;
+                    $(str).css("background-color", "blue");
+                });
+            } else {
+                Materialize.toast('La opción seleccionada no tiene posibles movimientos', 5000, 'rounded');
+                $(this).css("background-color", "green");
+            }
         } else {
             Materialize.toast('Opción no permitida', 5000, 'rounded');
         }
@@ -193,17 +205,33 @@ $(document).ready(function () {
 
     function searchMovement(i, j) {
         let possibles = [];
-        if (matrix[i - 2][j] != undefined && matrix[i - 2][j] == 2) {
-            possibles.push([i - 2, j]);
+        try {
+            if (matrix[i - 2][j] == 2) {
+                possibles.push([i - 2, j]);
+            }
+        } catch (err) {
+            // pass
         }
-        if (matrix[i][j - 2] != undefined && matrix[i][j - 2] == 2) {
-            possibles.push([i, j - 2]);
+        try {
+            if (matrix[i][j - 2] == 2) {
+                possibles.push([i, j - 2]);
+            }
+        } catch (err) {
+            // pass
         }
-        if (matrix[i][j + 2] != undefined && matrix[i][j + 2] == 2) {
-            possibles.push([i, j + 2]);
+        try {
+            if (matrix[i][j + 2] == 2) {
+                possibles.push([i, j + 2]);
+            }
+        } catch (err) {
+            // pass
         }
-        if (matrix[i + 2][j] != undefined && matrix[i + 2][j] == 2) {
-            possibles.push([i + 2, j]);
+        try {
+            if (matrix[i + 2][j] == 2) {
+                possibles.push([i + 2, j]);
+            }
+        } catch (err) {
+            // pass
         }
         return possibles;
     }
