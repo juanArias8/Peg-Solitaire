@@ -40,13 +40,18 @@ $(document).ready(function () {
     var move = [];
     let possibles = [];
 
+    var findMove = 0;
+    var copyMatrix = matrix.slice();
+    var maxMoves = countFulls(copyMatrix);
+    var solutions = [];
+
     /*****************************************************************
     ************************ VISUAL LOGIC ****************************
     ******************************************************************/
 
     // Materialize events
-    //$('.modal').modal();
-    //$('#modal1').modal('open');
+    $('.modal').modal();
+    $('#modal1').modal('open');
 
     // Ocultamos el cuerpo del juego
     $("#game-body").hide(0);
@@ -63,7 +68,7 @@ $(document).ready(function () {
         $("#btn-show-game").show(0);
 
         onGame = true;
-        paintGame();
+        paintGame(matrix);
     });
 
     $("#btn-cus").click(function () {
@@ -90,7 +95,7 @@ $(document).ready(function () {
                 if (matrix[coordinates[0]][coordinates[1]] == 1) {
                     $(this).css("background-color", "aqua");
 
-                    possibles = searchMovement(coordinates[0], coordinates[1]);
+                    possibles = searchMovement(coordinates[0], coordinates[1], matrix);
                     if (possibles.length > 0) {
                         colorPossibles("blue");
                         move.push(parseInt(id));
@@ -105,12 +110,18 @@ $(document).ready(function () {
                 move.push(parseInt(id));
 
                 if (possibles.indexOf(move[1]) != -1) {
-                    if (checkMiddleFullEmpty(move[0], move[1])) {
+                    let coordenatesId1 = getCoordinatesById(move[0]);
+                    let coordenatesId2 = getCoordinatesById(move[1]);
+                    let i1 = coordenatesId1[0];
+                    let j1 = coordenatesId1[1];
+                    let i2 = coordenatesId2[0];
+                    let j2 = coordenatesId2[1];
+                    if (checkMiddleFullEmpty(i1, j1, i2, j2, matrix)) {
                         Materialize.toast('Bien hecho!', 5000, 'rounded');
 
-                        changeEmptyByFull(move[0], move[1]);
-                        deleteMiddleFullEmpty(move[0], move[1]);
-                        paintGame();
+                        changeEmptyByFull(i1, j1, i2, j2, matrix);
+                        deleteMiddleFullEmpty(i1, j1, i2, j2, matrix);
+                        paintGame(matrix);
                         resetMove();
                     } else {
                         Materialize.toast('Movimiento no valido, no hay nada que eliminar', 5000, 'rounded');
@@ -143,7 +154,11 @@ $(document).ready(function () {
         matrix = matrixCustomisable;
         onCustomise = false;
         onGame = true;
-        paintGame();
+        paintGame(matrix);
+    });
+
+    $("#btn-show-game").click(function () {
+        findSolution(0);
     });
 
     $("#btn-fin-game").click(function () {
@@ -165,7 +180,7 @@ $(document).ready(function () {
     ************************* GAME LOGIC *****************************
     ******************************************************************/
 
-    function paintGame() {
+    function paintGame(matrix) {
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
                 let id = getIdByCoordinates(i, j, cols);
@@ -222,7 +237,7 @@ $(document).ready(function () {
         return coordinates;
     }
 
-    function searchMovement(i, j) {
+    function searchMovement(i, j, matrix) {
         let possiblesLocal = [];
         try {
             if (matrix[i - 2][j] == 2) {
@@ -259,25 +274,17 @@ $(document).ready(function () {
         return possiblesLocal;
     }
 
-    function changeEmptyByFull(id1, id2) {
-        let coordinatesId1 = getCoordinatesById(id1);
-        let coordinatesId2 = getCoordinatesById(id2);
-        matrix[coordinatesId1[0]][coordinatesId1[1]] = 2;
-        matrix[coordinatesId2[0]][coordinatesId2[1]] = 1;
+    function changeEmptyByFull(i1, j1, i2, j2, matrix) {
+        matrix[i1][j1] = 2;
+        matrix[i2][j2] = 1;
     }
 
-    function deleteMiddleFullEmpty(id1, id2) {
-        let coordinatesId1 = getCoordinatesById(id1);
-        let coordinatesId2 = getCoordinatesById(id2);
-        let i1 = coordinatesId1[0];
-        let j1 = coordinatesId1[1];
-        let i2 = coordinatesId2[0];
-        let j2 = coordinatesId2[1];
-        let middleCoordinates = findMiddleFullEmpty(i1, j1, i2, j2);
+    function deleteMiddleFullEmpty(i1, j1, i2, j2, matrix) {
+        let middleCoordinates = findMiddleFullEmpty(i1, j1, i2, j2, matrix);
         matrix[middleCoordinates[0]][middleCoordinates[1]] = 2;
     }
 
-    function findMiddleFullEmpty(i1, j1, i2, j2) {
+    function findMiddleFullEmpty(i1, j1, i2, j2, matrix) {
         let middle = [];
         let ifinal = 0;
         let jfinal = 0;
@@ -296,21 +303,60 @@ $(document).ready(function () {
         return middle;
     }
 
-    function checkMiddleFullEmpty(id1, id2) {
+
+    function checkMiddleFullEmpty(i1, j1, i2, j2, matrix) {
         let bool = false;
-        let coordinatesId1 = getCoordinatesById(id1);
-        let coordinatesId2 = getCoordinatesById(id2);
-        let i1 = coordinatesId1[0];
-        let j1 = coordinatesId1[1];
-        let i2 = coordinatesId2[0];
-        let j2 = coordinatesId2[1];
-        let middleCoordinates = findMiddleFullEmpty(i1, j1, i2, j2);
+        let middleCoordinates = findMiddleFullEmpty(i1, j1, i2, j2, matrix);
         let im = middleCoordinates[0];
         let jm = middleCoordinates[1];
         if (matrix[im][jm] == 1) {
             bool = true;
         }
         return bool;
+    }
+
+    function countFulls(matrix) {
+        let fulls = 0;
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                if (matrix[i][j] == 1) {
+                    fulls += 1;
+                }
+            }
+
+        }
+        return fulls;
+    }
+
+   function findSolution(findMove) {
+        if (findMove == maxMoves) {
+            if (copyMatrix[3][3] == 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                let possibles = searchMovement(i, j, copyMatrix);
+                for (let k = 0; k < possibles.length; k++) {
+                    let coordinates = getCoordinatesById(possibles[k]);
+                    if (checkMiddleFullEmpty(i, j, coordinates[0], coordinates[1], copyMatrix)) {
+                        changeEmptyByFull(i, j, coordinates[0], coordinates[1], copyMatrix);
+                        deleteMiddleFullEmpty(i, j, coordinates[0], coordinates[1], copyMatrix);
+                        if (findSolution(findMove + 1)) {
+                            solutions.push({ "origin": [i, j], "target": [coordinates[0], coordinates[1]] });
+                            return true;
+                        }
+                        solutions.pop();
+                    }
+                }
+            }
+
+        }
+        return false;
+
     }
 
     // Función para volver los datos a las condiciones iniciales
