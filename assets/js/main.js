@@ -54,6 +54,8 @@ $(document).ready(function () {
     var findMove = 0;
     var maxMoves = 0;
     var solutions = [];
+
+
     /*****************************************************************
     ************************ VISUAL LOGIC ****************************
     ******************************************************************/
@@ -62,17 +64,19 @@ $(document).ready(function () {
     $('.modal').modal();
     $('#modal1').modal('open');
 
-    // Ocultamos el cuerpo del juego
+    // Hide game body and buttons
     $("#game-body").hide(0);
     $("#btn-fin-cus").hide(0);
     $("#btn-fin-game").hide(0);
     $("#btn-show-game").hide(0);
 
+    // event click on original button 
     $("#btn-ori").click(function () {
         Materialize.toast('El juego ha sido iniciado', 5000, 'rounded');
         $("#btn-cus").hide(0);
         $("#btn-ori").hide(0);
         $("#btn-fin-game").show(0);
+        $("#game-solution").html("");
         $("#game-body").show("slow");
         $("#btn-show-game").show(0);
 
@@ -80,16 +84,19 @@ $(document).ready(function () {
         paintGame(matrix);
     });
 
+    // event click on customised button
     $("#btn-cus").click(function () {
         Materialize.toast('Seleccione sólo las fichas que estarán llenas', 5000, 'rounded');
         $("#btn-ori").hide(0);
         $("#btn-cus").hide(0);
         $("#btn-fin-cus").show(0);
+        $("#game-solution").html("");
         $("#game-body").show("slow");
 
         onCustomise = true;
     });
 
+    // event click on peg button
     $(".btn-peg").click(function () {
         if (onCustomise) {
             $(this).css("background-color", "green");
@@ -154,6 +161,7 @@ $(document).ready(function () {
         }
     });
 
+    // event click on finish personalization game 
     $("#btn-fin-cus").click(function () {
         Materialize.toast('El juego ha sido iniciado', 5000, 'rounded');
         $("#btn-fin-cus").hide(0);
@@ -166,6 +174,7 @@ $(document).ready(function () {
         paintGame(matrix);
     });
 
+    // event click on show game button
     $("#btn-show-game").click(function () {
         resetCopyMatrix();
         solutions = [];
@@ -183,6 +192,7 @@ $(document).ready(function () {
         $("#game-solution").html(str);
     });
 
+    // event click on finish game button customised game
     $("#btn-fin-game").click(function () {
         Materialize.toast('El juego ha sido terminado', 5000, 'rounded');
         $("#btn-cus").show(0);
@@ -198,10 +208,7 @@ $(document).ready(function () {
         unsealGame();
     });
 
-    /*****************************************************************
-    ************************* GAME LOGIC *****************************
-    ******************************************************************/
-
+    // Paint the game based on matrix
     function paintGame(matrix) {
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
@@ -218,12 +225,15 @@ $(document).ready(function () {
         }
     }
 
+
+    // Clear the color game
     function unsealGame() {
         $(".btn-peg").each(function () {
             $(this).css("background-color", "white");
         });
     }
 
+    // Paint pegs with possibles movements
     function colorPossibles(color) {
         possibles.forEach(element => {
             let aux = getCoordinatesById(element);
@@ -235,22 +245,32 @@ $(document).ready(function () {
         });
     }
 
+    // Clear a selected peg on bad selection
     function unsealSelected() {
         let id = move[0];
         let str = "#" + id;
         $(str).css("background-color", "green");
     }
 
+   
+    /*****************************************************************
+    ************************* GAME LOGIC *****************************
+    ******************************************************************/
+
+    // Reset necessary arrays for a movement
     function resetMove() {
         possibles = [];
         move = [];
     }
 
+
+    // Return a button id based on Matrix' coordinates
     function getIdByCoordinates(i, j) {
         let id = (rows * i) + j;
         return id;
     }
 
+    // Return the matrix's coordinates based on a button id
     function getCoordinatesById(id) {
         let coordinates = [];
         i = Math.floor(id / rows);
@@ -259,6 +279,7 @@ $(document).ready(function () {
         return coordinates;
     }
 
+    // Return the possibles movements for a peg
     function searchMovement(i, j, matrix) {
         let possiblesLocal = [];
         try {
@@ -296,16 +317,19 @@ $(document).ready(function () {
         return possiblesLocal;
     }
 
+    // Change the values of the matrix on a movement 
     function changeEmptyByFull(i1, j1, i2, j2, matrix) {
         matrix[i1][j1] = 2;
         matrix[i2][j2] = 1;
     }
 
+    // Change the middle value of the matrix on a movement
     function deleteMiddleFullEmpty(i1, j1, i2, j2, matrix) {
         let middleCoordinates = findMiddleFullEmpty(i1, j1, i2, j2, matrix);
         matrix[middleCoordinates[0]][middleCoordinates[1]] = 2;
     }
 
+    // returns the position of the middle peg
     function findMiddleFullEmpty(i1, j1, i2, j2, matrix) {
         let middle = [];
         let ifinal = 0;
@@ -325,7 +349,7 @@ $(document).ready(function () {
         return middle;
     }
 
-
+    // Check if the middle is ocuped by a peg
     function checkMiddleFullEmpty(i1, j1, i2, j2, matrix) {
         let bool = false;
         let middleCoordinates = findMiddleFullEmpty(i1, j1, i2, j2, matrix);
@@ -337,6 +361,7 @@ $(document).ready(function () {
         return bool;
     }
 
+    // Count all the pegs on matrix
     function countFulls(matrix) {
         let fulls = 0;
         for (let i = 0; i < rows; i++) {
@@ -350,6 +375,7 @@ $(document).ready(function () {
         return fulls;
     }
 
+    // Find the steps for a solution
     function findSolution(findMove) {
         for (let i = 0; findMove <= 31 && i < rows; i++) {
             for (let j = 0; j < cols; j++) {
@@ -386,7 +412,7 @@ $(document).ready(function () {
         return false;
     }
 
-    // Función para volver los datos a las condiciones iniciales
+    // Reset the matrix values 
     function resetMatrix() {
         matrix = [
             [0, 0, 1, 1, 1, 0, 0],
@@ -399,6 +425,7 @@ $(document).ready(function () {
         ];
     }
 
+    // Reset the matrixCustomisable values 
     function resetMatrixCustomisable() {
         matrixCustomisable = [
             [0, 0, 2, 2, 2, 0, 0],
@@ -412,6 +439,7 @@ $(document).ready(function () {
         ];
     }
 
+    // Reset the copyMatrix values 
     function resetCopyMatrix() {
         copyMatrix = [
             [0, 0, 2, 2, 2, 0, 0],
