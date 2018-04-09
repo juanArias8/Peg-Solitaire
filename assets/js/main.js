@@ -30,6 +30,17 @@ $(document).ready(function () {
 
     ];
 
+    var copyMatrix = [
+        [0, 0, 2, 2, 2, 0, 0],
+        [0, 0, 2, 2, 2, 0, 0],
+        [2, 2, 2, 2, 2, 2, 2],
+        [2, 2, 2, 2, 2, 2, 2],
+        [2, 2, 2, 2, 2, 2, 2],
+        [0, 0, 2, 2, 2, 0, 0],
+        [0, 0, 2, 2, 2, 0, 0]
+
+    ];
+
     var rows = matrix.length;
     var cols = matrix[0].length;
     //var prohibited = [0, 1, 5, 6, 7, 8, 12, 13, 35, 36, 40, 41, 42, 43, 47, 48];
@@ -41,10 +52,8 @@ $(document).ready(function () {
     let possibles = [];
 
     var findMove = 0;
-    var copyMatrix = matrix.slice();
-    var maxMoves = countFulls(copyMatrix);
+    var maxMoves = 0;
     var solutions = [];
-
     /*****************************************************************
     ************************ VISUAL LOGIC ****************************
     ******************************************************************/
@@ -158,7 +167,20 @@ $(document).ready(function () {
     });
 
     $("#btn-show-game").click(function () {
+        resetCopyMatrix();
+        solutions = [];
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                copyMatrix[i][j] = matrix[i][j];
+            }
+        }
+        maxMoves = countFulls(copyMatrix);
         findSolution(0);
+        let str = "";
+        solutions.forEach((element, index) => {
+            str += "Paso " + index + " ( " + element.origin + " ==> " + element.target + " )<br/>";
+        });
+        $("#game-solution").html(str);
     });
 
     $("#btn-fin-game").click(function () {
@@ -328,35 +350,40 @@ $(document).ready(function () {
         return fulls;
     }
 
-   function findSolution(findMove) {
-        if (findMove == maxMoves) {
-            if (copyMatrix[3][3] == 1) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        for (let i = 0; i < rows; i++) {
+    function findSolution(findMove) {
+        for (let i = 0; findMove <= 31 && i < rows; i++) {
             for (let j = 0; j < cols; j++) {
-                let possibles = searchMovement(i, j, copyMatrix);
-                for (let k = 0; k < possibles.length; k++) {
-                    let coordinates = getCoordinatesById(possibles[k]);
-                    if (checkMiddleFullEmpty(i, j, coordinates[0], coordinates[1], copyMatrix)) {
-                        changeEmptyByFull(i, j, coordinates[0], coordinates[1], copyMatrix);
-                        deleteMiddleFullEmpty(i, j, coordinates[0], coordinates[1], copyMatrix);
-                        if (findSolution(findMove + 1)) {
-                            solutions.push({ "origin": [i, j], "target": [coordinates[0], coordinates[1]] });
-                            return true;
+                if (copyMatrix[i][j] != 0) {
+                    let possibles = searchMovement(i, j, copyMatrix);
+                    if (possibles.length > 0) {
+                        for (let k = 0; k < possibles.length; k++) {
+                            let coordinates = getCoordinatesById(possibles[k]);
+                            if (copyMatrix[i][j] != 2) {
+                                let i2 = coordinates[0];
+                                let j2 = coordinates[1];
+                                if (checkMiddleFullEmpty(i, j, i2, j2, copyMatrix)) {
+                                    changeEmptyByFull(i, j, i2, j2, copyMatrix);
+                                    deleteMiddleFullEmpty(i, j, i2, j2, copyMatrix);
+                                    if (!(findMove >= 31)) {
+                                        let idOrigen = getIdByCoordinates(i, j);
+                                        let idTarget = getIdByCoordinates(i2, j2);
+                                        solutions.push({ "origin": idOrigen, "target": idTarget });
+                                        if (findSolution(findMove + 1)) {
+                                            return true;
+                                        } else {
+                                            console.log("Backtraking back");
+                                        }
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                            }
                         }
-                        solutions.pop();
                     }
                 }
             }
-
         }
         return false;
-
     }
 
     // Función para volver los datos a las condiciones iniciales
@@ -374,6 +401,19 @@ $(document).ready(function () {
 
     function resetMatrixCustomisable() {
         matrixCustomisable = [
+            [0, 0, 2, 2, 2, 0, 0],
+            [0, 0, 2, 2, 2, 0, 0],
+            [2, 2, 2, 2, 2, 2, 2],
+            [2, 2, 2, 2, 2, 2, 2],
+            [2, 2, 2, 2, 2, 2, 2],
+            [0, 0, 2, 2, 2, 0, 0],
+            [0, 0, 2, 2, 2, 0, 0]
+
+        ];
+    }
+
+    function resetCopyMatrix() {
+        copyMatrix = [
             [0, 0, 2, 2, 2, 0, 0],
             [0, 0, 2, 2, 2, 0, 0],
             [2, 2, 2, 2, 2, 2, 2],
